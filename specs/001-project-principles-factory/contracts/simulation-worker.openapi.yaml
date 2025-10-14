@@ -1,0 +1,398 @@
+openapi: 3.0.3
+info:
+  title: WeedBreed Flow Simulation Worker API
+  version: 0.1.0
+  description: |
+    Internal contract for client-only web worker endpoints that power the deterministic
+    simulation, validation, and save workflows. Requests are dispatched via postMessage
+    but documented here in REST form for clarity.
+servers:
+  - url: worker://simulation
+paths:
+  /sim/run:
+    post:
+      summary: Execute deterministic simulation ticks
+      tags: [Simulation]
+      operationId: runSimulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunSimulationInput'
+      responses:
+        '200':
+          description: Deterministic tick results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunSimulationOutput'
+        '422':
+          description: Validation failed prior to execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /sim/validate:
+    post:
+      summary: Validate a graph configuration without running ticks
+      tags: [Simulation]
+      operationId: validateGraph
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateGraphInput'
+      responses:
+        '200':
+          description: Validation outcome
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateGraphOutput'
+  /saves/export:
+    post:
+      summary: Produce a portable JSON save file snapshot
+      tags: [Persistence]
+      operationId: exportSave
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportSaveInput'
+      responses:
+        '200':
+          description: Portable save payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveFile'
+  /saves/import:
+    post:
+      summary: Load a portable JSON save file, returning normalized state
+      tags: [Persistence]
+      operationId: importSave
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveFile'
+      responses:
+        '200':
+          description: Normalized planner state ready for hydration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannerState'
+        '422':
+          description: Save file failed schema validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+components:
+  schemas:
+    RunSimulationInput:
+      type: object
+      required: [seed, graph, ticks]
+      properties:
+        seed:
+          type: string
+          description: Deterministic seed string extracted from save metadata.
+        graph:
+          $ref: '#/components/schemas/PlannerState'
+        ticks:
+          type: integer
+          minimum: 1
+          maximum: 3600
+          description: Number of ticks to execute.
+        tickBudgetMs:
+          type: number
+          default: 16
+          description: Tick duration budget before degradation is reported.
+    RunSimulationOutput:
+      type: object
+      required: [ticksExecuted, clampEvents, workforce, transfers, kpis]
+      properties:
+        ticksExecuted:
+          type: integer
+        clampEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClampEvent'
+        workforce:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkforceAllocation'
+        transfers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferSnapshot'
+        kpis:
+          type: object
+          additionalProperties:
+            type: number
+          description: Hashable KPI metrics per tick.
+    ValidateGraphInput:
+      type: object
+      required: [graph]
+      properties:
+        graph:
+          $ref: '#/components/schemas/PlannerState'
+        checkCycles:
+          type: boolean
+          default: true
+        checkBudgets:
+          type: boolean
+          default: true
+    ValidateGraphOutput:
+      type: object
+      required: [isValid, issues]
+      properties:
+        isValid:
+          type: boolean
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationIssue'
+    ExportSaveInput:
+      type: object
+      required: [plannerState]
+      properties:
+        plannerState:
+          $ref: '#/components/schemas/PlannerState'
+        version:
+          type: string
+          description: Target save schema version.
+    PlannerState:
+      type: object
+      required: [company, structures, zones, plugins]
+      properties:
+        company:
+          $ref: '#/components/schemas/Company'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Structure'
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Zone'
+        plugins:
+          type: array
+          items:
+            $ref: '#/components/schemas/PluginManifest'
+    Company:
+      type: object
+      required: [id, name, funds]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        funds:
+          type: number
+        coordinates:
+          type: object
+          properties:
+            lat: { type: number }
+            lon: { type: number }
+        structures:
+          type: array
+          items:
+            type: string
+    Structure:
+      type: object
+      required: [id, name, budgets, laborPool, rooms]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        budgets:
+          $ref: '#/components/schemas/StructureBudgets'
+        laborPool:
+          $ref: '#/components/schemas/LaborPool'
+        laborWeights:
+          $ref: '#/components/schemas/LaborWeights'
+        rooms:
+          type: array
+          items:
+            type: string
+    Zone:
+      type: object
+      required: [id, roomId, zoneAreaM2, nodes, edges]
+      properties:
+        id: { type: string }
+        roomId: { type: string }
+        zoneAreaM2: { type: number }
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Edge'
+    Node:
+      type: object
+      required: [id, typeId, params, pins]
+      properties:
+        id: { type: string }
+        typeId: { type: string }
+        label: { type: string }
+        footprintM2: { type: number }
+        params:
+          type: object
+          additionalProperties: {}
+        pins:
+          $ref: '#/components/schemas/Pins'
+        labor:
+          $ref: '#/components/schemas/LaborProfile'
+        maintenance:
+          $ref: '#/components/schemas/MaintenanceProfile'
+    Edge:
+      type: object
+      required: [id, sourceNodeId, sourcePin, targetNodeId, targetPin, resourceType]
+      properties:
+        id: { type: string }
+        sourceNodeId: { type: string }
+        sourcePin: { type: string }
+        targetNodeId: { type: string }
+        targetPin: { type: string }
+        resourceType: { $ref: '#/components/schemas/ResourceType' }
+        capacityPerHour: { type: number }
+    Pins:
+      type: object
+      properties:
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pin'
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pin'
+    Pin:
+      type: object
+      required: [name, resourceType]
+      properties:
+        name: { type: string }
+        resourceType: { $ref: '#/components/schemas/ResourceType' }
+    ResourceType:
+      type: string
+      enum: [energy, water, nutrients, biomass, wet_buds, dry_buds, funds, workforce, compost_green, compost_brown, waste_gray, waste_brown]
+    LaborPool:
+      type: object
+      required: [minutesPerHour]
+      properties:
+        minutesPerHour: { type: number }
+        weights:
+          $ref: '#/components/schemas/LaborWeights'
+    LaborWeights:
+      type: object
+      required: [ops, maint, log]
+      properties:
+        ops: { type: number, minimum: 0, maximum: 1 }
+        maint: { type: number, minimum: 0, maximum: 1 }
+        log: { type: number, minimum: 0, maximum: 1 }
+    LaborProfile:
+      type: object
+      properties:
+        opsPerHour: { type: number }
+        requiresWorker: { type: boolean }
+        laborPerUnit: { type: number }
+    MaintenanceProfile:
+      type: object
+      properties:
+        wearRatePerHour: { type: number }
+        fixPerMinute: { type: number }
+        debtMax: { type: number }
+    StructureBudgets:
+      type: object
+      properties:
+        maxAreaM2: { type: number }
+        gridCapacityKW: { type: number }
+        waterMainLph: { type: number }
+        exhaustM3ph: { type: number }
+    ClampEvent:
+      type: object
+      required: [nodeId, limitingFactor]
+      properties:
+        nodeId: { type: string }
+        limitingFactor:
+          type: string
+          enum: [input, edge, budget, labor, maintenance, energy]
+        magnitude: { type: number }
+        message: { type: string }
+    WorkforceAllocation:
+      type: object
+      required: [nodeId, opsMinutes, maintMinutes, logMinutes]
+      properties:
+        nodeId: { type: string }
+        opsMinutes: { type: number }
+        maintMinutes: { type: number }
+        logMinutes: { type: number }
+    TransferSnapshot:
+      type: object
+      required: [transferNodeId, queuedUnits, averageEtaTicks]
+      properties:
+        transferNodeId: { type: string }
+        queuedUnits: { type: number }
+        averageEtaTicks: { type: number }
+    ValidationIssue:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        path: { type: string }
+    ValidationError:
+      type: object
+      required: [errors]
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationIssue'
+    SaveFile:
+      type: object
+      required: [version, seed, company, structures, zones, plugins]
+      properties:
+        version: { type: string }
+        seed: { type: string }
+        company:
+          $ref: '#/components/schemas/Company'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Structure'
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Zone'
+        plugins:
+          type: array
+          items:
+            $ref: '#/components/schemas/PluginManifest'
+    PluginManifest:
+      type: object
+      required: [id, version, deterministic]
+      properties:
+        id: { type: string }
+        version: { type: string }
+        wbSpecVersion: { type: string }
+        deterministic: { type: boolean }
+        provides:
+          type: array
+          items: { type: string }
+        conflicts:
+          type: array
+          items: { type: string }
+        replaces:
+          type: array
+          items: { type: string }
+        contributions:
+          type: object
+          additionalProperties: {}

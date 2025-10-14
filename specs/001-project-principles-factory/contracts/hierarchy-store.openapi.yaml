@@ -1,0 +1,211 @@
+openapi: 3.0.3
+info:
+  title: WeedBreed Flow Hierarchy Store API
+  version: 0.1.0
+  description: Local data access contract used by the client store for company/structure/room navigation flows.
+servers:
+  - url: worker://hierarchy
+paths:
+  /company:
+    get:
+      summary: Retrieve company snapshot with structure summary cards
+      tags: [Hierarchy]
+      operationId: getCompany
+      responses:
+        '200':
+          description: Company view data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyView'
+  /structures/{structureId}:
+    get:
+      summary: Retrieve structure details including rooms and budgets
+      tags: [Hierarchy]
+      operationId: getStructure
+      parameters:
+        - in: path
+          name: structureId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Structure detail view data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StructureView'
+        '404':
+          description: Structure not found
+  /rooms/{roomId}:
+    get:
+      summary: Retrieve room details, including zone metadata
+      tags: [Hierarchy]
+      operationId: getRoom
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomView'
+        '404':
+          description: Room not found
+  /zones/{zoneId}:
+    get:
+      summary: Retrieve zone, nodes, edges, and area utilization
+      tags: [Hierarchy]
+      operationId: getZone
+      parameters:
+        - in: path
+          name: zoneId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Zone canvas payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZoneView'
+        '404':
+          description: Zone not found
+components:
+  schemas:
+    CompanyView:
+      type: object
+      required: [id, name, funds, structures]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        funds: { type: number }
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/StructureCard'
+    StructureCard:
+      type: object
+      required: [id, name, budgetUtilization]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        budgetUtilization:
+          type: object
+          properties:
+            grid: { type: number }
+            water: { type: number }
+            area: { type: number }
+    StructureView:
+      type: object
+      required: [id, name, budgets, rooms]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        budgets:
+          $ref: '#/components/schemas/StructureBudgets'
+        rooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoomCard'
+        laborPool:
+          $ref: '#/components/schemas/LaborPool'
+    RoomCard:
+      type: object
+      required: [id, name, hasZones, budgets]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        hasZones: { type: boolean }
+        budgets:
+          $ref: '#/components/schemas/RoomBudgets'
+    RoomView:
+      type: object
+      required: [id, hasZones]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        hasZones: { type: boolean }
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZoneSummary'
+    ZoneSummary:
+      type: object
+      required: [id, name, areaUsedPercent]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        areaUsedPercent: { type: number }
+    ZoneView:
+      type: object
+      required: [id, nodes, edges, gauges]
+      properties:
+        id: { type: string }
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Edge'
+        gauges:
+          type: object
+          properties:
+            budget:
+              type: object
+              properties:
+                grid: { type: number }
+                water: { type: number }
+                exhaust: { type: number }
+            labor:
+              type: number
+            maintenanceDebt:
+              type: number
+            transferLatency:
+              type: number
+    StructureBudgets:
+      type: object
+      properties:
+        maxAreaM2: { type: number }
+        gridCapacityKW: { type: number }
+        waterMainLph: { type: number }
+        exhaustM3ph: { type: number }
+    RoomBudgets:
+      type: object
+      properties:
+        roomAreaM2: { type: number }
+        roomGridKW: { type: number }
+        roomWaterLph: { type: number }
+        roomExhaustM3ph: { type: number }
+    LaborPool:
+      type: object
+      properties:
+        minutesPerHour: { type: number }
+        weights:
+          type: object
+          properties:
+            ops: { type: number }
+            maint: { type: number }
+            log: { type: number }
+    Node:
+      type: object
+      properties:
+        id: { type: string }
+        typeId: { type: string }
+        label: { type: string }
+        footprintM2: { type: number }
+    Edge:
+      type: object
+      properties:
+        id: { type: string }
+        resourceType: { type: string }
+        capacityPerHour: { type: number }
