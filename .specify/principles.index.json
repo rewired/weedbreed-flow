@@ -1,0 +1,71 @@
+{
+  "version": "0.1.0",
+  "source": ".specify/memory/constitution.md",
+  "principles": [
+    { "id": "P-VIS-01", "title": "Graph-first gameplay" },
+    { "id": "P-VIS-02", "title": "Client-only MVP" },
+    { "id": "P-VIS-03", "title": "Factory over botany" },
+    { "id": "P-VIS-04", "title": "Spec-driven" },
+
+    { "id": "P-DET-01", "title": "Deterministic sim" },
+    { "id": "P-DET-02", "title": "Stable ticks" },
+    { "id": "P-DET-03", "title": "Golden fixtures" },
+
+    { "id": "P-SIM-01", "title": "Conservative clamps" },
+    { "id": "P-SIM-02", "title": "Explicit energy" },
+    { "id": "P-SIM-03", "title": "Typed pins only" },
+    { "id": "P-SIM-04", "title": "No silent failure" },
+
+    { "id": "P-ECO-01", "title": "Currency-agnostic" },
+    { "id": "P-ECO-02", "title": "Separation of concerns" },
+    { "id": "P-ECO-03", "title": "Costs first-class" },
+
+    { "id": "P-MOD-01", "title": "Plugins everywhere" },
+    { "id": "P-MOD-02", "title": "JSON-first, DSL second, DLI last" },
+    { "id": "P-MOD-03", "title": "Deterministic sandbox" },
+    { "id": "P-MOD-04", "title": "Strict identities" },
+
+    { "id": "P-PERF-01", "title": "Tick budget" },
+    { "id": "P-PERF-02", "title": "Graph scale targets" },
+    { "id": "P-PERF-03", "title": "O(N+E) paths" },
+
+    { "id": "P-UX-01", "title": "Read the graph" },
+    { "id": "P-UX-02", "title": "Direct manipulation" },
+    { "id": "P-UX-03", "title": "Persistent scaffolding" },
+    { "id": "P-UX-04", "title": "Color semantics" },
+    { "id": "P-UX-05", "title": "Accessibility" },
+
+    { "id": "P-WORK-01", "title": "Labor as scale" },
+    { "id": "P-WORK-02", "title": "Simple first" },
+
+    { "id": "P-TEST-01", "title": "Schema-locked" },
+    { "id": "P-TEST-02", "title": "Black-box sim tests" },
+    { "id": "P-TEST-03", "title": "UI contract tests" },
+
+    { "id": "P-DATA-01", "title": "Portable saves" },
+    { "id": "P-DATA-02", "title": "Migrations" },
+    { "id": "P-DATA-03", "title": "Privacy" },
+
+    { "id": "P-OBS-01", "title": "Fail loud, not late" },
+    { "id": "P-OBS-02", "title": "Explain clamps" },
+    { "id": "P-OBS-03", "title": "Debug panes" },
+
+    { "id": "P-GOV-01", "title": "ADRs for irreversible choices" },
+    { "id": "P-GOV-02", "title": "Spec slices" },
+    { "id": "P-GOV-03", "title": "Changelog discipline" },
+
+    { "id": "P-I18N-01", "title": "English spec, locale UI" },
+
+    { "id": "P-NON-01", "title": "No netcode" },
+    { "id": "P-NON-02", "title": "No full agronomy" },
+    { "id": "P-NON-03", "title": "No real currencies" }
+  ],
+  "heuristics": [
+    { "id": "H-DET-01", "title": "Determinism > Convenience" },
+    { "id": "H-CLR-01", "title": "Clarity > Cleverness" },
+    { "id": "H-DEC-01", "title": "Declarative > Imperative" },
+    { "id": "H-UX-01", "title": "User signal > engine purity" },
+    { "id": "H-UNDO-01", "title": "Undoability" }
+  ]
+}
+

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wb://schemas/graph.schema.json",
+  "title": "WeedBreed Planner Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "seed", "company", "structures", "rooms", "zones"],
+  "properties": {
+    "version": { "type": "string" },
+    "seed": { "type": "string" },
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["funds"],
+      "properties": { "funds": { "type": "number" } }
+    },
+    "structures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "lat", "lon", "budgets", "laborPoolMinutesPerHour", "laborWeights"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "lat": { "type": "number" },
+          "lon": { "type": "number" },
+          "budgets": { "type": "object" },
+          "laborPoolMinutesPerHour": { "type": "number" },
+          "laborWeights": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "structureId", "hasZones", "budgets"],
+        "properties": {
+          "id": { "type": "string" },
+          "structureId": { "type": "string" },
+          "hasZones": { "type": "boolean" },
+          "purpose": { "type": "string" },
+          "budgets": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "roomId", "zoneArea_m2", "nodes", "edges"],
+        "properties": {
+          "id": { "type": "string" },
+          "roomId": { "type": "string" },
+          "zoneArea_m2": { "type": "number" },
+          "nodes": { "type": "array" },
+          "edges": { "type": "array" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
+

@@ -1,0 +1,11 @@
+{
+  "graph": "graph.simple.json",
+  "seed": "speckit-seed-0001",
+  "ticks": 1,
+  "expected": {
+    "hash": "d2af00b261cec8963bdf18869f294c5420f191e2a5ff3eca3da32d9b74b8978a",
+    "kpis": { "fundsDelta": 0, "throughputs": {} }
+  },
+  "notes": "Hash from deterministic placeholder simulation. Update when engine evolves."
+}
+
