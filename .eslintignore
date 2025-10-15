@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+coverage/
+reports/
+*.min.js
+apps/**/dist/
+packages/**/dist/

@@ -20,13 +20,13 @@ description: Task list template for feature implementation aligned with the Weed
 
 Purpose: deterministic scaffolding all stories rely on.
 
-- [ ] T001 [ ] [Core] Create monorepo workspaces (`pnpm-workspace.yaml`, `apps/factory`, `packages/sim-core`, `packages/sim-fixtures`, `packages/ui-kit`, `tests/`). (Principles: P1, P12)
-- [ ] T002 [P] [Core] Initialize pnpm project configuration with Node.js 22 engines and shared scripts in `package.json`. (Principles: P1, P9)
-- [ ] T003 [P] [Core] Configure Vite + React + TypeScript baseline in `apps/factory/vite.config.ts` with Tailwind CSS setup. (Principles: P7)
-- [ ] T004 [P] [Core] Add ESLint, Prettier, Tailwind, and TypeScript configs aligned with determinism rules. (Principles: P12)
-- [ ] T005 [P] [Core] Scaffold `packages/ui-kit` with shared Tailwind primitives and resource color tokens. (Principles: P7)
-- [ ] T006 [P] [Core] Scaffold `packages/sim-core` with TypeScript project references and deterministic xorshift RNG utility. (Principles: P2)
-- [ ] T007 [P] [Core] Scaffold `packages/sim-fixtures` to host golden graphs and Vitest harness. (Principles: P2, P9)
+- [x] T001 [ ] [Core] Create monorepo workspaces (`pnpm-workspace.yaml`, `apps/factory`, `packages/sim-core`, `packages/sim-fixtures`, `packages/ui-kit`, `tests/`). (Principles: P1, P12)
+- [x] T002 [P] [Core] Initialize pnpm project configuration with Node.js 22 engines and shared scripts in `package.json`. (Principles: P1, P9)
+- [x] T003 [P] [Core] Configure Vite + React + TypeScript baseline in `apps/factory/vite.config.ts` with Tailwind CSS setup. (Principles: P7)
+- [x] T004 [P] [Core] Add ESLint, Prettier, Tailwind, and TypeScript configs aligned with determinism rules. (Principles: P12)
+- [x] T005 [P] [Core] Scaffold `packages/ui-kit` with shared Tailwind primitives and resource color tokens. (Principles: P7)
+- [x] T006 [P] [Core] Scaffold `packages/sim-core` with TypeScript project references and deterministic xorshift RNG utility. (Principles: P2)
+- [x] T007 [P] [Core] Scaffold `packages/sim-fixtures` to host golden graphs and Vitest harness. (Principles: P2, P9)
 
 ## Phase 1: Foundational (Blocking)
 

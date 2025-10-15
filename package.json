@@ -1,0 +1,18 @@
+{
+  "name": "weedbreed-flow",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.10.0",
+  "engines": {
+    "node": "^22.0.0",
+    "pnpm": "^8.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter factory dev",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter factory test:e2e",
+    "docs:generate": "pnpm --filter factory docs"
+  }
+}

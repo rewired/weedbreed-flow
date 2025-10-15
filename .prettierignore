@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+coverage/
+reports/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+apps/**/dist/
+packages/**/dist/

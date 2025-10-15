@@ -1,0 +1,33 @@
+# Node / pnpm
+node_modules/
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+
+# Builds
+apps/**/dist/
+dist/
+build/
+coverage/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests
+reports/
+
+# Temporary
+*.tmp
+*.swp
+.codex
