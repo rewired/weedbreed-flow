@@ -25,7 +25,7 @@ const joinPath = (issue: ValidationIssue, prefix: string) => {
   if (issue.path === "") {
     return prefix;
   }
-  return ${prefix}.;
+  return `${prefix}.${issue.path}`;
 };
 
 const describeDescriptor = (descriptor: PluginManifestDescriptor, index: number) => {
@@ -60,7 +60,7 @@ export class PluginRegistry {
       return {
         ok: false,
         issues: parsed.error.issues.map((issue) => ({
-          code: schema.,
+          code: issue.code,
           message: issue.message,
           path: issue.path.length ? issue.path.join(".") : ""
         }))
@@ -74,7 +74,7 @@ export class PluginRegistry {
     if (!manifest.deterministic) {
       issues.push({
         code: "plugins.non_deterministic",
-        message: Plugin  must opt into deterministic execution,
+        message: "Plugin must opt into deterministic execution",
         path: "deterministic"
       });
     }
@@ -83,7 +83,7 @@ export class PluginRegistry {
     if (current && current.version !== manifest.version && !replaced.has(manifest.id)) {
       issues.push({
         code: "plugins.version_conflict",
-        message: Plugin  already registered with version ,
+        message: "Plugin already registered with version",
         path: "id"
       });
     }
@@ -92,8 +92,8 @@ export class PluginRegistry {
       if (this.manifests.has(conflictId) && !replaced.has(conflictId)) {
         issues.push({
           code: "plugins.conflict_detected",
-          message: Plugin  conflicts with loaded ,
-          path: conflicts.
+          message: "Plugin conflicts with loaded",
+          path: `conflicts.${conflictIndex}`
         });
       }
     });
@@ -103,8 +103,8 @@ export class PluginRegistry {
       if (owner && owner !== manifest.id && !replaced.has(owner)) {
         issues.push({
           code: "plugins.provides_conflict",
-          message: Capability  already provided by ,
-          path: provides.
+          message: "Capability already provided by",
+          path: `provides.${providedIndex}`
         });
       }
     });
